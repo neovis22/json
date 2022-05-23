@@ -1,6 +1,7 @@
 /*
     Library: json
     Author: neovis
+    Link: https://github.com/neovis22/json
 */
 
 json_load(path, encoding="utf-8") {
