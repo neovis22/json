@@ -57,11 +57,11 @@ json을 객체로 변환
 - `json_pretty(object, space=4)`
 `space`로 지정된 공백 수 혹은 문자열로 들여쓰기된 json으로 변환
 - `json_true()`
-json 으로 변환시 true로 변환
+json 으로 변환시 true로 치환
 - `json_false()`
-json 으로 변환시 false로 변환
+json 으로 변환시 false로 치환
 - `json_null()`
-json 으로 변환시 null로 변환
+json 으로 변환시 null로 치환
 - `json_escape(str)`
 - `json_unescape(str)`
 - `json_setMaxReferenceCount(limit=300)`
