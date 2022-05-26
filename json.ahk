@@ -103,10 +103,8 @@ class __JSON__ {
                 case ":":
                     is_key := false
                 case """", "'":
-                    p := ++ pos
-                    while ((c := SubStr(src, pos, 1)) != "" && c != ch)
-                        pos += c == "\" ? 2 : 1
-                    value := json_unescape(SubStr(src, p, pos-p))
+                    RegExMatch(src, "\G(?:\\.|[^\\" ch "])*?(?=" ch ")", str, ++ pos)
+                    value := json_unescape(str), pos += StrLen(str)
                     , is_key ? key := value : array[obj] ? obj.push(value) : obj[key] := value
                 case "[", "{":
                     stack[++ depth] := value := (is_key := ch == "{") ? {} : []
@@ -129,10 +127,9 @@ class __JSON__ {
                             throw Exception("Json SyntaxError: '/' at position " pos-1)
                     }
                 default:
-                    p := pos
-                    while ((c := SubStr(src, pos, 1)) != "" && !InStr(":,[]{}", c))
-                        pos ++
-                    value := Trim(SubStr(src, p, pos-p), " `t`r`n"), pos --
+                    if (!p := RegExMatch(src, "[:,\[\]{}]",, pos))
+                        p := StrLen(src)
+                    value := Trim(SubStr(src, pos, p-pos), " `t`r`n"), pos := p-1
                     
                     if value is number
                         value += 0
