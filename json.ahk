@@ -103,8 +103,10 @@ class __JSON__ {
                 case ":":
                     is_key := false
                 case """", "'":
-                    RegExMatch(src, "\G(?:\\.|[^\\" ch "])*?(?=" ch ")", str, ++ pos)
-                    value := json_unescape(str), pos += StrLen(str)
+                    p := ++ pos
+                    while ((c := SubStr(src, pos, 1)) != "" && c != ch)
+                        pos += c == "\" ? 2 : 1
+                    value := json_unescape(SubStr(src, p, pos-p))
                     , is_key ? key := value : array[obj] ? obj.push(value) : obj[key] := value
                 case "[", "{":
                     stack[++ depth] := value := (is_key := ch == "{") ? {} : []
