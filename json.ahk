@@ -66,8 +66,8 @@ json_unescape(str) {
     p := 0
     while (p := InStr(str, "\",, ++ p))
         str := (c := SubStr(str, p+1, 1)) = "u"
-        ? SubStr(str, 1, p-1) Chr("0x" SubStr(str, p+2, 4)) SubStr(str, p+6)
-        : SubStr(str, 1, p-1) (map.hasKey(c) ? map[c] : c) SubStr(str, p+2)
+            ? StrReplace(str, SubStr(str, p, 6), Chr("0x" SubStr(str, p+2, 4)),, 1)
+            : StrReplace(str, SubStr(str, p, 2), map.hasKey(c) ? map[c] : c,, 1)
     return str
 }
 
