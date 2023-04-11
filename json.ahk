@@ -148,10 +148,6 @@ class __JSON__ {
     
     stringify(obj, ref, space="", newline="") {
         if (IsObject(obj)) {
-            ; ComObject는 열거시 DISP_E_MEMBERNOTFOUND 오류가 발생할 수 있으므로 식별 가능한 클래스 문자열로 대체
-            if (ComObjValue(obj) != "")
-                return """{ComObject:" ComObjType(obj, "Class") "}"""
-            
             switch (obj) {
                 case json_null():
                     return "null"
@@ -160,6 +156,10 @@ class __JSON__ {
                 case json_false():
                     return "false"
             }
+            
+            ; ComObject는 열거시 DISP_E_MEMBERNOTFOUND 오류가 발생할 수 있으므로 식별 가능한 클래스 문자열로 대체
+            if (ComObjValue(obj) != "")
+                return """{ComObject:" ComObjType(obj, "Class") "}"""
             
             if (ref[&obj]) {
                 if (++ ref[&obj] > this.maxReferenceCount)
