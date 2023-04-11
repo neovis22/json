@@ -33,17 +33,17 @@ json_pretty(obj, space=4) {
 }
 
 json_true() {
-    static x := ComObject(0xB, -1)
+    static x := []
     return x
 }
 
 json_false() {
-    static x := ComObject(0xB, 0)
+    static x := []
     return x
 }
 
 json_null() {
-    static x := ComObject(1, 0)
+    static x := []
     return x
 }
 
