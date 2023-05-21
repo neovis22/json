@@ -33,18 +33,15 @@ json_pretty(obj, space=4) {
 }
 
 json_true() {
-    static x := []
-    return x
+    return __JSON__.true
 }
 
 json_false() {
-    static x := []
-    return x
+    return __JSON__.false
 }
 
 json_null() {
-    static x := []
-    return x
+    return __JSON__.null
 }
 
 json_escape(str) {
@@ -61,13 +58,17 @@ json_escape(str) {
     return str
 }
 
-json_unescape(str) {
+json_unescape(byref str) {
     static map := {b:"`b", f:"`f", n:"`n", r:"`r", t:"`t"}
-    p := 0
-    while (p := InStr(str, "\",, ++ p))
-        str := (c := SubStr(str, p+1, 1)) = "u"
-            ? StrReplace(str, SubStr(str, p, 6), Chr("0x" SubStr(str, p+2, 4)),, 1)
-            : StrReplace(str, SubStr(str, p, 2), map.hasKey(c) ? map[c] : c,, 1)
+    if (pos := InStr(str, "\")) {
+        p := 1
+        loop
+            res .= SubStr(str, p, pos-p) ((c := SubStr(str, pos+1, 1)) = "u"
+                ? (Chr("0x" SubStr(str, pos+2, 4)), p := pos+6)
+                : (map.hasKey(c) ? map[c] : c, p := pos+2))
+        until (!pos := InStr(str, "\",, p))
+        return res SubStr(str, p)
+    }
     return str
 }
 
@@ -83,6 +84,12 @@ json_setEscapePattern(regex="[^\x{20}-\x{10ffff}]") {
     내부 클래스
 */
 class __JSON__ {
+    
+    static true := []
+    
+    static false := []
+    
+    static null := []
     
     static maxReferenceCount := 300
     
@@ -149,24 +156,19 @@ class __JSON__ {
     stringify(obj, ref, space="", newline="") {
         if (IsObject(obj)) {
             switch (obj) {
-                case json_null():
-                    return "null"
-                case json_true():
-                    return "true"
-                case json_false():
-                    return "false"
+                case this.null: return "null"
+                case this.true: return "true"
+                case this.false: return "false"
             }
             
             ; ComObject는 열거시 DISP_E_MEMBERNOTFOUND 오류가 발생할 수 있으므로 식별 가능한 클래스 문자열로 대체
             if (ComObjValue(obj) != "")
                 return """{ComObject:" ComObjType(obj, "Class") "}"""
             
-            if (ref[&obj]) {
-                if (++ ref[&obj] > this.maxReferenceCount)
-                    throw Exception("Json Error: too much recursion")
-            } else {
+            if (ref[&obj] && ++ ref[&obj] > this.maxReferenceCount)
+                throw Exception("Json Error: too much recursion")
+            else
                 ref[&obj] := 1
-            }
             
             ; 아이템이 1~N개인지 확인하여 객체와 배열을 구분
             if (ObjMinIndex(obj) == 1 && ObjCount(obj) == ObjMaxIndex(obj)) {
